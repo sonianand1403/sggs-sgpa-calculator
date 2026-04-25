@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SGGS SGPA Calculator</title>
+  <style>
+    body { font-family: Arial; background:#0f172a; color:white; text-align:center; }
+    select, button { padding:8px; margin:5px; border-radius:6px; }
+    .card { background:#1e293b; padding:15px; margin:10px; border-radius:10px; }
+  </style>
+</head>
+
+<body>
+
+<h1>SGGS SGPA Calculator</h1>
+
+<select id="structure" onchange="loadSubjects()">
+  <option value="">Select Structure</option>
+  <option value="A">Structure A</option>
+  <option value="B">Structure B</option>
+</select>
+
+<select id="semester" onchange="loadSubjects()">
+  <option value="">Select Semester</option>
+  <option value="1">Sem 1</option>
+  <option value="2">Sem 2</option>
+</select>
+
+<div id="subjects"></div>
+
+<h2 id="result"></h2>
+
+<script>
+
+const grades = {
+"A+":10,"A":9,"B+":8,"B":7,"C+":6,"C":5,"D":4,"F":0
+};
+
+const data = {
+"A":{
+"1":[
+{name:"Physics",T:3,P:1},
+{name:"Mathematics-I",T:4,P:0},
+{name:"Basic Electronics",T:2,P:0},
+{name:"Basic Electrical Engineering",T:3,P:1},
+{name:"Programming",T:3,P:1},
+{name:"Engineering Exploration",T:0,P:2},
+{name:"Yoga",T:1,P:1}
+],
+"2":[
+{name:"Chemistry",T:3,P:1},
+{name:"Mathematics-II",T:3,P:0},
+{name:"EGD",T:2,P:2},
+{name:"Communication",T:2,P:1},
+{name:"Thermo & Mechanics",T:3,P:1},
+{name:"IKS",T:2,P:0},
+{name:"Photography",T:1,P:1}
+]
+},
+"B":{
+"1":[
+{name:"Chemistry",T:3,P:1},
+{name:"Mathematics-I",T:4,P:0},
+{name:"EGD",T:2,P:2},
+{name:"Communication",T:2,P:1},
+{name:"Thermo & Mechanics",T:3,P:1},
+{name:"IKS",T:2,P:0},
+{name:"Photography",T:1,P:1}
+],
+"2":[
+{name:"Physics",T:3,P:1},
+{name:"Mathematics-II",T:3,P:0},
+{name:"Basic Electronics",T:2,P:0},
+{name:"Basic Electrical Engineering",T:3,P:1},
+{name:"Programming",T:3,P:1},
+{name:"Engineering Exploration",T:0,P:2},
+{name:"Yoga",T:1,P:1}
+]
+}
+};
+
+function dropdown(id){
+return `<select id="${id}">
+<option value="">Grade</option>
+${Object.keys(grades).map(g=>`<option>${g}</option>`).join("")}
+</select>`;
+}
+
+function loadSubjects(){
+let s=document.getElementById("structure").value;
+let sem=document.getElementById("semester").value;
+let box=document.getElementById("subjects");
+box.innerHTML="";
+
+if(!s||!sem) return;
+
+data[s][sem].forEach((sub,i)=>{
+let html=`<div class="card"><b>${sub.name}</b><br>`;
+
+if(sub.T>0){
+html+=`T(${sub.T}) ${dropdown("t"+i)}<br>`;
+}
+if(sub.P>0){
+html+=`P(${sub.P}) ${dropdown("p"+i)}`;
+}
+
+html+="</div>";
+box.innerHTML+=html;
+});
+
+box.innerHTML+=`<button onclick="calc()">Calculate SGPA</button>`;
+}
+
+function calc(){
+let s=document.getElementById("structure").value;
+let sem=document.getElementById("semester").value;
+
+let total=0, credits=0;
+
+data[s][sem].forEach((sub,i)=>{
+if(sub.T>0){
+let g=document.getElementById("t"+i).value;
+if(g){ total+=grades[g]*sub.T; credits+=sub.T; }
+}
+if(sub.P>0){
+let g=document.getElementById("p"+i).value;
+if(g){ total+=grades[g]*sub.P; credits+=sub.P; }
+}
+});
+
+document.getElementById("result").innerText =
+"SGPA = " + (total/credits).toFixed(2);
+}
+
+</script>
+
+</body>
+</html>
